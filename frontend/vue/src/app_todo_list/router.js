@@ -1,12 +1,14 @@
+const APP_NAME = "Todo_List"
+
 const ARRROUTER = [
-    // {
-    //     path: `/`,
-    //     name: "MyApp",
-    //     meta: {
-    //         title: "So sánh bản đồ",
-    //     },
-    //     component: () => import("../app_store_client/MyApp.vue"),
-    // },
+    {
+        path: `/`,
+        name: "Home",
+        meta: {
+            title: "Trang chủ",
+        },
+        component: () => import("./views/index.vue"),
+    },
     // {
     //     path: `/:appId`,
     //     name: "MyAppDetail",
@@ -19,6 +21,7 @@ const ARRROUTER = [
 
 export default function (path) {
 return ARRROUTER.map((item) => {
+    item.name = APP_NAME + "_" + item.name
     item.path = "/" + path + item.path;
     return item;
 });
