@@ -1,0 +1,36 @@
+<form action="" id="formAddTask">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="fromAddTask_taskName" class="form-label">Task name</label>
+        <input type="text" class="form-control" name="name" id="fromAddTask_taskName" placeholder="Enter task name">
+    </div>
+    <div class="mb-3">
+        <label for="fromAddTask_taskDescription" class="form-label">Description</label>
+        <textarea class="form-control" name="description" id="fromAddTask_taskDescription" rows="5"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="fromAddTask_taskDueDate" class="form-label">Due date</label>
+        <input type="datetime-local" class="form-control" id="fromAddTask_taskDueDate">
+    </div>
+</form>
+
+<div class="mb-3">
+    <button type="button" class="btn btn-primary" onclick="postTask()">Add task</button>
+    <button type="reset" class="btn btn-secondary" onclick="resetFrom()">Reset</button>
+</div>
+
+<script>
+    function resetFrom() {
+        $('#formAddTask').get(0).reset()
+    }
+    function postTask() {
+        const formAddTask = document.getElementById("formAddTask");
+        const formData = new FormData(formAddTask);
+        console.log(formData)
+        fetch("/api/task/", {
+            body: formData,
+            method: "POST"
+        })
+    }
+
+</script>

@@ -36,6 +36,9 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    "rest_framework",
+
+    "app_base",
     "app_todolist",
 
     # Gateway API
@@ -116,4 +119,4 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-PROJ_TITLE = "MVB Blog"
+PROJ_TITLE = "MVB Project 1"
