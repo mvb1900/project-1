@@ -23,6 +23,7 @@
     function resetFrom() {
         $('#formAddTask').get(0).reset()
     }
+
     function postTask() {
         const formAddTask = document.getElementById("formAddTask");
         const formData = new FormData(formAddTask);
@@ -30,6 +31,8 @@
         fetch("/api/task/", {
             body: formData,
             method: "POST"
+        }).then(() => {
+            appListTask.getListTask()
         })
     }
 

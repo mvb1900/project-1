@@ -1,0 +1,89 @@
+<div id="listTaskApp">
+    <div v-for="task in tasks">
+        <div v-if="task.is_completed">
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked
+                   @click="setTaskStatus(task.id)">
+            <a :href="'/task/' + task.id" class="link-primary text-decoration-line-through">[[task.name]]</a>
+            <p class="text-decoration-line-through">[[task.description]]</p>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="setDeleteTask(task)">
+                X
+            </button>
+        </div>
+        <div v-else>
+            <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"
+                   @click="setTaskStatus(task.id)">
+            <a :href="'/task/' + task.id" class="link-primary">[[task.name]]</a>
+            <p class="">[[task.description]]</p>
+            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="setDeleteTask(task)">
+                X
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Task | <b>[[delete_task.name]]</b></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    ...
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const appListTask = new Vue({
+        el: '#listTaskApp',
+        delimiters: ['[[', ']]'],
+        data: {
+            tasks: [],
+            delete_task: {
+
+            }
+        },
+        mounted: function () {
+            this.getListTask()
+        },
+        methods: {
+            async getListTask() {
+                const response = await fetch("/api/task/")
+                this.tasks = await response.json()
+            },
+            async setTaskStatus(taskId) {
+                const response = await fetch(`/api/task/${taskId}/`)
+                const task = await response.json()
+                if (task['is_completed']) {
+                    await this.setTaskUnCompleted(taskId)
+                } else {
+                    await this.setTaskCompleted(taskId)
+                }
+                await this.getListTask()
+            },
+            async setTaskCompleted(taskId) {
+                await fetch(`/api/task/${taskId}/completed/`, {
+                    method: "POST"
+                })
+            },
+            async setTaskUnCompleted(taskId) {
+                await fetch(`/api/task/${taskId}/uncompleted/`, {
+                    method: "POST"
+                })
+            },
+            setDeleteTask(task) {
+                console.log(task)
+                this.delete_task = task;
+            }
+        }
+    })
+
+</script>
