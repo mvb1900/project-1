@@ -6,7 +6,7 @@ from app_todolist.models import Task
 class TaskSerializer(serializers.ModelSerializer):
     class Meta:
         model = Task
-        fields = ['id', 'name', 'description', 'is_completed', 'created_date', 'updated_date', 'created_by',
+        fields = ['id', 'name', 'description', 'is_completed', 'created_date', 'updated_date', 'created_by', 'due_date',
                   'updated_by']
 
     def create(self, validated_data):

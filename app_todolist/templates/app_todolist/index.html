@@ -13,7 +13,14 @@ Edit task
 delete task
 --
 {% block content %}
-    <h1>Thêm Task</h1>
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="#">Home</a></li>
+            <li class="breadcrumb-item"><a href="#">Library</a></li>
+            <li class="breadcrumb-item"><a href="#">Library</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Data</li>
+        </ol>
+    </nav>
     {% include 'app_todolist/components/formAddTask.html' %}
     <h1>Tasks</h1>
     {% include 'app_todolist/components/listTasks.html' %}

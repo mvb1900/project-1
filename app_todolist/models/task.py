@@ -12,6 +12,7 @@ class Task(Base):
     name = models.CharField(max_length=255)
     description = models.TextField()
     is_completed = models.BooleanField(default=False)
+    due_date = models.DateTimeField()
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,
                                    related_name="task_created_by")
     updated_by = models.ForeignKey(User, on_delete=models.SET_NULL, blank=True, null=True,

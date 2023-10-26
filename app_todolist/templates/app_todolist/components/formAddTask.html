@@ -1,39 +1,66 @@
-<form action="" id="formAddTask">
-    {% csrf_token %}
-    <div class="mb-3">
-        <label for="fromAddTask_taskName" class="form-label">Task name</label>
-        <input type="text" class="form-control" name="name" id="fromAddTask_taskName" placeholder="Enter task name">
+<div id="addTaskApp">
+    <div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addTaskModalLabel"><b>Add Task</b></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="" id="formAddTask">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="fromAddTask_taskName" class="form-label">Task name</label>
+                            <input type="text" class="form-control" name="name" id="fromAddTask_taskName"
+                                   placeholder="Enter task name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="fromAddTask_taskDescription" class="form-label">Description</label>
+                            <textarea class="form-control" name="description" id="fromAddTask_taskDescription"
+                                      rows="5"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fromAddTask_taskDueDate" class="form-label">Due date</label>
+                            <input type="datetime-local" class="form-control" name="due_date" id="fromAddTask_taskDueDate">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" @click="postTask()" data-bs-dismiss="modal"
+                            aria-label="Close">Add task
+                    </button>
+                    <button type="reset" class="btn btn-secondary" @click="resetFrom()">Reset</button>
+                </div>
+            </div>
+        </div>
     </div>
-    <div class="mb-3">
-        <label for="fromAddTask_taskDescription" class="form-label">Description</label>
-        <textarea class="form-control" name="description" id="fromAddTask_taskDescription" rows="5"></textarea>
-    </div>
-    <div class="mb-3">
-        <label for="fromAddTask_taskDueDate" class="form-label">Due date</label>
-        <input type="datetime-local" class="form-control" id="fromAddTask_taskDueDate">
-    </div>
-</form>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addTaskModal">Add Task
+    </button>
 
-<div class="mb-3">
-    <button type="button" class="btn btn-primary" onclick="postTask()">Add task</button>
-    <button type="reset" class="btn btn-secondary" onclick="resetFrom()">Reset</button>
 </div>
-
 <script>
-    function resetFrom() {
-        $('#formAddTask').get(0).reset()
-    }
-
-    function postTask() {
-        const formAddTask = document.getElementById("formAddTask");
-        const formData = new FormData(formAddTask);
-        console.log(formData)
-        fetch("/api/task/", {
-            body: formData,
-            method: "POST"
-        }).then(() => {
-            appListTask.getListTask()
-        })
-    }
+    const appAddTask = new Vue({
+        el: '#addTaskApp',
+        delimiters: ['[[', ']]'],
+        mounted: function () {
+        },
+        methods: {
+            resetFrom() {
+                $('#formAddTask').get(0).reset()
+            },
+            postTask() {
+                const formAddTask = document.getElementById("formAddTask");
+                const formData = new FormData(formAddTask);
+                console.log(formData)
+                fetch("/api/task/", {
+                    body: formData,
+                    method: "POST"
+                }).then(() => {
+                    appListTask.getListTask()
+                })
+                this.resetFrom()
+            }
+        }
+    })
 
 </script>

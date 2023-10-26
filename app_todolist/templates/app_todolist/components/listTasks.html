@@ -1,39 +1,56 @@
 <div id="listTaskApp">
-    <div v-for="task in tasks">
+    <button type="button" class="btn btn-outline-secondary btn-sm"
+            :class="isFilterTypeEqual(showTasks.filter.types.all)"
+            @click="setFilterType(showTasks.filter.types.all)">All
+    </button>
+    <button type="button" class="btn btn-outline-secondary btn-sm"
+            :class="isFilterTypeEqual(showTasks.filter.types.processing)"
+            @click="setFilterType(showTasks.filter.types.processing)">Processing
+    </button>
+    <button type="button" class="btn btn-outline-secondary btn-sm"
+            :class="isFilterTypeEqual(showTasks.filter.types.completed)"
+            @click="setFilterType(showTasks.filter.types.completed)">Completed
+    </button>
+    <button type="button" class="btn btn-outline-secondary btn-sm"
+            :class="isFilterTypeEqual(showTasks.filter.types.out_of_date)"
+            @click="setFilterType(showTasks.filter.types.out_of_date)">Out of date
+    </button>
+    <div v-for="task in showTasks.result">
         <div v-if="task.is_completed">
             <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked" checked
                    @click="setTaskStatus(task.id)">
             <a :href="'/task/' + task.id" class="link-primary text-decoration-line-through">[[task.name]]</a>
             <p class="text-decoration-line-through">[[task.description]]</p>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="setDeleteTask(task)">
-                X
-            </button>
+            <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#deleteTaskModal"
+                    @click="setDeleteTask(task)"></button>
         </div>
         <div v-else>
             <input class="form-check-input" type="checkbox" value="" id="flexCheckChecked"
                    @click="setTaskStatus(task.id)">
             <a :href="'/task/' + task.id" class="link-primary">[[task.name]]</a>
             <p class="">[[task.description]]</p>
-            <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#exampleModal" @click="setDeleteTask(task)">
-                X
-            </button>
+            <button type="button" class="btn-close" data-bs-toggle="modal" data-bs-target="#deleteTaskModal"
+                    @click="setDeleteTask(task)"></button>
         </div>
     </div>
 
     <!-- Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="deleteTaskModal" tabindex="-1" aria-labelledby="deleteTaskModalLabel"
+         aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Delete Task | <b>[[delete_task.name]]</b></h5>
+                    <h5 class="modal-title" id="deleteTaskModalLabel">Delete Task | <b>[[delete_task.name]]</b></h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    ...
+                    Confirm delete this task!
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
+                    <button type="button" class="btn btn-danger" @click="deleteTask()" data-bs-dismiss="modal">Delete
+                        Task
+                    </button>
                 </div>
             </div>
         </div>
@@ -47,12 +64,23 @@
         delimiters: ['[[', ']]'],
         data: {
             tasks: [],
-            delete_task: {
-
-            }
+            showTasks: {
+                filter: {
+                    types: {
+                        all: "all",
+                        processing: "processing",
+                        completed: "completed",
+                        out_of_date: "out_of_date",
+                    },
+                    currentType: "all"
+                },
+                result: []
+            },
+            delete_task: {}
         },
-        mounted: function () {
-            this.getListTask()
+        mounted: async function () {
+            await this.getListTask()
+            this.filterTask()
         },
         methods: {
             async getListTask() {
@@ -82,6 +110,45 @@
             setDeleteTask(task) {
                 console.log(task)
                 this.delete_task = task;
+            },
+            async deleteTask() {
+                await fetch(`/api/task/${this.delete_task.id}/delete/`, {
+                    method: "DELETE"
+                })
+                await this.getListTask()
+            },
+            isFilterTypeEqual(type) {
+                return {
+                    active: this.showTasks.filter.currentType === type
+                }
+            },
+            setFilterType(type) {
+                this.showTasks.filter.currentType = type
+                this.filterTask()
+            },
+            filterTask() {
+                let result = [];
+
+                function filterCompletedTask(task) {
+                    return task.is_completed
+                }
+
+                function filterProcessingTask(task) {
+                    const due_task = task.due_date
+                    const today = new Date();
+                    const due_date = new Date(due_task)
+                    const timeT = due_task.split('T')[1]
+                    console.log(today > due_date)
+                }
+
+                result = this.tasks
+                if (this.showTasks.filter.currentType === this.showTasks.filter.types.completed) {
+                    result = result.filter(filterCompletedTask)
+                } else if (this.showTasks.filter.currentType === this.showTasks.filter.types.processing) {
+                    result = result.filter(filterProcessingTask)
+                }
+                this.showTasks.result = result
+
             }
         }
     })
